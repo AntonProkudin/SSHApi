@@ -81,9 +81,20 @@ public class RemoteVirtController : ControllerBase
     }
     [Authorize]
     [HttpGet("StatusDocker")]
-    public async Task<IActionResult> S1()
+    public async Task<IActionResult> StatusDocker()
     {
-        return Ok();
+        string response = "";
+        using (var client = new SshClient(host, 22, username, password))
+        {
+            client.Connect();
+            // ѕример выполнени€ команды на удаленном сервере
+            var command = client.RunCommand("cd /opt/docker/mynginx");
+            //response += command.Result;
+            command = client.RunCommand("docker ps -a");
+            response += command.Result;
+            client.Disconnect();
+        }
+        return Ok(response);
     }
     [Authorize]
     [HttpPut("ChangeHost")]
@@ -138,9 +149,20 @@ public class RemoteVirtController : ControllerBase
     }
     [Authorize]
     [HttpPost("StartDocker")]
-    public async Task<IActionResult> S2()
+    public async Task<IActionResult> StartDocker([FromBody] Request nameVCL)
     {
-        return Ok();
+        string response = "";
+        using (var client = new SshClient(host, 22, username, password))
+        {
+            client.Connect();
+            // ѕример выполнени€ команды на удаленном сервере
+            var command = client.RunCommand("cd /opt/docker/mynginx");
+            //response += command.Result;
+            command = client.RunCommand($"docker start {nameVCL.Name}");
+            response += command.Result;
+            client.Disconnect();
+        }
+        return Ok(response);
     }
     [Authorize]
     [HttpPost("DestroyVCL")]
@@ -174,14 +196,37 @@ public class RemoteVirtController : ControllerBase
     }
     [Authorize]
     [HttpPost("DestroyDocker")]
-    public async Task<IActionResult> S3()
+    public async Task<IActionResult> StopDocker([FromBody] Request nameVCL)
     {
-        return Ok();
+        string response = "";
+        using (var client = new SshClient(host, 22, username, password))
+        {
+            client.Connect();
+            // ѕример выполнени€ команды на удаленном сервере
+            var command = client.RunCommand("cd /opt/docker/mynginx");
+            //response += command.Result;
+            command = client.RunCommand($"docker stop {nameVCL.Name}");
+            response += command.Result;
+            client.Disconnect();
+        }
+        return Ok(response);
     }
     [Authorize]
     [HttpPost("CreateVCL")]
-    public async Task<IActionResult> S4()
+    public async Task<IActionResult> CreateVcl([FromBody] string commands)
     {
-        return Ok();
+        string response = "";
+        using (var client = new SshClient(host, 22, username, password))
+        {
+            client.Connect();
+            // ѕример выполнени€ команды на удаленном сервере
+            var command = client.RunCommand("cd /var/lib/libvirt/boot/");
+            //response += command.Result;
+            command = client.RunCommand(commands);
+            response += command.Result;
+            client.Disconnect();
+        }
+        return Ok(response);
     }
+    /*"virt-install \ --virt-type=kvm \ --name main4\ --ram 2048 \ --vcpus=2 \ --os-variant=rhl8.0 \ --hvm \ --cdrom=/var/lib/libvirt/boot/main.iso \ --network=bridge:virbr0,model=virtio \ --graphics vnc \ --disk path=/var/lib/libvirt/boot/main2.png,size=40,bus=virtio,format=qcow2"*/
 };
