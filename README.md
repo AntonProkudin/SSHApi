@@ -13,3 +13,4 @@ DigitalEggVirtualManager позволяет:
 - в контроллере произвести первичную настройку для ssh соединения
 # Для настройки Client необходимо
 - в utils/axios указать адрес api
+- https://github.com/AntonProkudin/SSHApi
